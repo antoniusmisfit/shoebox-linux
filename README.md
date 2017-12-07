@@ -16,3 +16,7 @@ If you want to clean the work area before recompiling Shoebox Linux, simply run 
 ```
 sudo ./clean.sh
 ```
+# TODO
+* Replace the basic init with something more robust.
+* Create a welcome banner.
+* Add a package manager.
