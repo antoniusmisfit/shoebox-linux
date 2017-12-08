@@ -29,7 +29,7 @@ mount -t sysfs none /sys
 echo "Starting services..."
 runsvdir /etc/service
 echo "Welcome to $DISTRO_NAME!"
-setsid cttyhack /bin/sh
+exec setsid cttyhack /bin/sh
 EOF
 chmod +x init
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
