@@ -17,7 +17,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install
 cd _install
 rm -f linuxrc
-mkdir -p dev proc sys etc/service
+mkdir -p dev proc sys etc/service home
 touch etc/group etc/passwd
 cat > init << EOF
 #!/bin/sh
@@ -27,7 +27,7 @@ mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
 echo "Starting services..."
-runsvdir /etc/service
+runsvdir /etc/service &
 echo "Welcome to $DISTRO_NAME!"
 exec setsid cttyhack /bin/sh
 EOF
