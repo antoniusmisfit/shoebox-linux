@@ -6,7 +6,7 @@ On Debian-based systems, installing the build-essential and xorriso packages sho
 
 ## Compiling Shoebox
 
-Simply copy the build.sh script into an empty directory, navigate to the directory, and athen run as root:
+Simply copy the build.sh script into an empty directory, navigate to the directory, and then run as root:
 ```
 sudo ./build.sh
 ```
