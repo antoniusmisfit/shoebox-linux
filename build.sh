@@ -65,7 +65,7 @@ xorriso \
   -as mkisofs \
   -R \
   -r \
-  -o ../minimal_linux_live.iso \
+  -o ../shoebox_linux_live.iso \
   -b isolinux.bin \
   -c boot.cat \
   -input-charset UTF-8 \
