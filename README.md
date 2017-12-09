@@ -6,11 +6,11 @@ On Debian-based systems, installing the build-essential and xorriso packages sho
 
 ## Compiling Shoebox
 
-Simply run the build.sh script in a terminal as root:
+Simply copy the build.sh script into an empty directory, navigate to the directory, and athen run as root:
 ```
 sudo ./build.sh
 ```
-If all goes well, you should have a "minimal_linux_live.iso" file created in the current directory, ready to be burned to CD/USB or testing as a virtual machine.
+If all goes well, you should have a "shoebox_linux_live.iso" file created in the current directory, ready to be burned to CD/USB or testing as a virtual machine.
 ## Cleaning up
 If you want to clean the work area before recompiling Shoebox Linux, simply run the clean.sh script in a terminal as root:
 ```
