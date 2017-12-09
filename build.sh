@@ -17,8 +17,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install
 cd _install
 rm -f linuxrc
-mkdir -p dev proc sys etc/service home
-touch etc/group etc/passwd
+mkdir -p dev proc sys etc/service
 cat > init << EOF
 #!/bin/sh
 dmesg -n 1
@@ -26,12 +25,22 @@ echo "Mounting filesystems..."
 mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
-echo "Starting services..."
-runsvdir /etc/service &
-echo "Welcome to $DISTRO_NAME!"
-exec setsid cttyhack /bin/sh
+echo "Starting sbin/init..."
+exec /sbin/init
 EOF
 chmod +x init
+cat > etc/inittab << EOF
+::restart:/sbin/init
+::shutdown:echo "Shutting down..."
+::shutdown:sync
+::shutdown:umount -a -r
+::shutdown:echo "Come back soon! :)"
+::shutdown:sleep 1
+::ctrlaltdel:/sbin/reboot
+::once:echo "Welcome to $DISTRO_NAME!"
+::once:runsvdir /etc/service
+::respawn:/bin/cttyhack /bin/sh
+EOF
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
 cd ../../linux-$KERNEL_VERSION
 make mrproper defconfig bzImage
