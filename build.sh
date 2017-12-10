@@ -17,7 +17,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install
 cd _install
 rm -f linuxrc
-mkdir -p dev proc sys etc/service
+mkdir -p dev proc sys etc/service home
 cat > init << EOF
 #!/bin/sh
 dmesg -n 1
