@@ -18,6 +18,7 @@ make busybox install
 cd _install
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home
+touch etc/group etc/passwd
 cat > init << EOF
 #!/bin/sh
 dmesg -n 1
