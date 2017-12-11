@@ -16,9 +16,6 @@ fi
 for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz;do
 tar -xvf $eachpkg
 done
-#tar -xvf kernel.tar.xz
-#tar -xvf busybox.tar.bz2
-#tar -xvf syslinux.tar.xz
 mkdir isoimage
 cd busybox-$BUSYBOX_VERSION
 make distclean defconfig
@@ -28,24 +25,30 @@ cd _install
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home
 touch etc/group etc/passwd
-cat > init << EOF
+cat > etc/rocketbox-init << EOF
 #!/bin/sh
+echo "Rocketbox init v0.1alpha"
+echo "Starting up..."
 dmesg -n 1
 echo "Mounting filesystems..."
 mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
-echo "Starting sbin/init..."
+echo "Starting services and userspace..."
 exec /sbin/init
 EOF
-chmod +x init
+ln -s etc/rocketbox-init init
+cat > etc/rocketbox-shutdown << EOF
+echo "Shutting down..."
+sync
+umount -a -r
+echo "Come back soon! :)"
+sleep 1
+EOF
+chmod +x etc/rocketbox-*
 cat > etc/inittab << EOF
 ::restart:/sbin/init
-::shutdown:echo "Shutting down..."
-::shutdown:sync
-::shutdown:umount -a -r
-::shutdown:echo "Come back soon! :)"
-::shutdown:sleep 1
+::shutdown:/etc/rocketbox-shutdown
 ::ctrlaltdel:/sbin/reboot
 ::once:echo "Welcome to $DISTRO_NAME!"
 ::once:runsvdir /etc/service
