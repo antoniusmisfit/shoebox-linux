@@ -15,9 +15,10 @@ To test out your build of Shoebox Linux, run the qemu.sh script.
 ## Cleaning up
 If you want to clean the work area before recompiling Shoebox Linux, simply run the clean.sh script in a terminal as root:
 ```
-sudo ./clean.sh
+#Use without the "-a" argument to keep pre-downloaded tarballs and ISO image.
+sudo ./clean.sh -a
 ```
 # TODO
-* Replace the basic init with something more robust.
+* Replace the basic init with something more robust.(In progress)
 * Create a welcome banner.
 * Add a package manager.
