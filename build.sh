@@ -4,12 +4,21 @@ KERNEL_VERSION=4.12.3
 BUSYBOX_VERSION=1.27.1
 SYSLINUX_VERSION=6.03
 DISTRO_NAME="Shoebox Linux"
+if [ ! -e kernel.tar.xz ];then
 wget -O kernel.tar.xz http://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
+fi
+if [ ! -e busybox.tar.bz2 ];then
 wget -O busybox.tar.bz2 http://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
+fi
+if [ ! -e syslinux.tar.xz ];then
 wget -O syslinux.tar.xz http://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
-tar -xvf kernel.tar.xz
-tar -xvf busybox.tar.bz2
-tar -xvf syslinux.tar.xz
+fi
+for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz;do
+tar -xvf $eachpkg
+done
+#tar -xvf kernel.tar.xz
+#tar -xvf busybox.tar.bz2
+#tar -xvf syslinux.tar.xz
 mkdir isoimage
 cd busybox-$BUSYBOX_VERSION
 make distclean defconfig
