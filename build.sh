@@ -25,6 +25,7 @@ cd _install
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home
 touch etc/group etc/passwd
+printf "Shoebox" > etc/hostname
 cat > etc/rocketbox-init << EOF
 #!/bin/sh
 echo "Rocketbox init v0.1alpha"
@@ -34,6 +35,8 @@ echo "Mounting filesystems..."
 mount -t devtmpfs none /dev
 mount -t proc none /proc
 mount -t sysfs none /sys
+echo "Setting hostname..."
+hostname -F /etc/hostname
 echo "Starting services and userspace..."
 exec /sbin/init
 EOF
