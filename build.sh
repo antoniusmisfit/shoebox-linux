@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex
-KERNEL_VERSION=4.12.3
-BUSYBOX_VERSION=1.27.1
+KERNEL_VERSION=4.14.5
+BUSYBOX_VERSION=1.27.2
 SYSLINUX_VERSION=6.03
 DISTRO_NAME="Shoebox Linux"
 if [ ! -e kernel.tar.xz ];then
