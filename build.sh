@@ -23,7 +23,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install
 cd _install
 rm -f linuxrc
-mkdir -p dev proc sys etc/service home
+mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
 touch etc/group etc/passwd
 printf "Shoebox" > etc/hostname
 cat > etc/rocketbox-init << EOF
@@ -79,6 +79,7 @@ cat > etc/inittab << EOF
 ::ctrlaltdel:/sbin/reboot
 ::once:echo "Welcome to $DISTRO_NAME!"
 ::once:runsvdir /etc/service
+::once:crond
 ::respawn:/bin/cttyhack /bin/sh
 EOF
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
