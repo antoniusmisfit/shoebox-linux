@@ -48,6 +48,30 @@ umount -a -r
 echo "Come back soon! :)"
 sleep 1
 EOF
+cat > etc/rocketbox-service << DEOF
+#!/bin/sh
+
+do_help()
+{
+cat << EOF
+Usage: \$0 [start|stop|status|restart|add|remove] /path/to/service
+
+Options:
+start	Start a service.
+stop	Stop a running service.
+restart	Stop, then start a previously running service.
+status	Report the status of the given service.
+add	Adds a service directory to /etc/service via soft linking.
+remove	Removes a service from /etc/service by removing the soft link.
+EOF
+}
+case \$1 in
+	start|stop|restart|status) sv \$1 \$2;;
+	add) ln -s \$2 /etc/service/\$(basename \$2);;
+	remove) rm -rf /etc/service/\$(basename \$2);;
+	*) do_help;exit;;
+esac
+DEOF
 chmod +x etc/rocketbox-*
 cat > etc/inittab << EOF
 ::restart:/sbin/init
