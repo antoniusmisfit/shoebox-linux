@@ -27,7 +27,7 @@ rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
 touch etc/passwd
 echo "root:x:0:" > etc/group
-echo "root:x:0:0:Linux User,,,:/root:/bin/sh" > etc/passwd
+echo "root::0:0:Linux User,,,:/root:/bin/sh" > etc/passwd
 cat > etc/banner.txt << EOF
 Welcome to
      _           _              _ _             
