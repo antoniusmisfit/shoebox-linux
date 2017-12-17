@@ -73,7 +73,9 @@ remove	Removes a service from /etc/service by removing the soft link.
 EOF
 }
 case \$1 in
-	start|stop|restart|status) sv \$1 \$2;;
+	start|restart) sv up /etc/service/\$(basename \$2);;
+	stop) sv down /etc/service/\$(basename \$2);;
+	status) sv \$1 /etc/service/\$(basename \$2);;
 	add) ln -s \$2 /etc/service/\$(basename \$2);;
 	remove) rm -rf /etc/service/\$(basename \$2);;
 	*) do_help;exit;;
