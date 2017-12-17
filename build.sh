@@ -27,7 +27,6 @@ rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
-echo "localhost" > etc/hostname
 echo "order hosts,bind" > etc/host.conf
 echo "multi on" >> etc/host.conf
 echo "" >> etc/issue
