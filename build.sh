@@ -1,6 +1,6 @@
 #!/bin/sh
 set -ex
-export CFLAGS="-0s -s"
+export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
