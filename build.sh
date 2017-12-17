@@ -25,9 +25,36 @@ make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
-touch etc/passwd
+echo "127.0.0.1      localhost" > etc/hosts
+echo "localnet    127.0.0.1" > etc/networks
+echo "localhost" > etc/hostname
+echo "order hosts,bind" > etc/host.conf
+echo "multi on" >> etc/host.conf
+echo "" >> etc/issue
+echo "root:x:0:0:root:/root:/bin/sh" > etc/passwd
+echo "root::13525:0:99999:7:::" > etc/shadow
 echo "root:x:0:" > etc/group
-echo "root::0:0:Linux User,,,:/root:/bin/sh" > etc/passwd
+echo "root:*::" > etc/gshadow
+chmod 640 etc/shadow
+chmod 640 etc/gshadow
+cat > etc/securetty << EOF
+Welcome to
+# /etc/securetty: List of terminals on which root is allowed to login.
+#
+console
+
+# For people with serial port consoles
+ttyS0
+
+# Standard consoles
+tty1
+tty2
+tty3
+tty4
+tty5
+tty6
+tty7
+EOF
 cat > etc/banner.txt << EOF
 Welcome to
      _           _              _ _             
