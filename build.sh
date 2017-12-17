@@ -23,7 +23,7 @@ make distclean defconfig
 sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install -j$JOBS
 cd _install
-ln -s bin/busybox init
+ln -sf bin/busybox init
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
 touch etc/passwd
