@@ -1,5 +1,6 @@
 #!/bin/sh
 set -ex
+JOBS=$(expr $(nproc) + 1)
 KERNEL_VERSION=4.14.5
 BUSYBOX_VERSION=1.27.2
 SYSLINUX_VERSION=6.03
@@ -20,7 +21,7 @@ mkdir isoimage
 cd busybox-$BUSYBOX_VERSION
 make distclean defconfig
 sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
-make busybox install
+make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
@@ -93,7 +94,7 @@ cat > etc/inittab << EOF
 EOF
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
 cd ../../linux-$KERNEL_VERSION
-make mrproper defconfig bzImage
+make mrproper defconfig bzImage -j$JOBS
 cp arch/x86/boot/bzImage ../isoimage/kernel.gz
 cd ../isoimage
 cp ../syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
