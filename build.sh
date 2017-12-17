@@ -38,7 +38,6 @@ echo "root:*::" > etc/gshadow
 chmod 640 etc/shadow
 chmod 640 etc/gshadow
 cat > etc/securetty << EOF
-Welcome to
 # /etc/securetty: List of terminals on which root is allowed to login.
 #
 console
