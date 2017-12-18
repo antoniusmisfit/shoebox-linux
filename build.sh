@@ -23,6 +23,7 @@ make distclean defconfig
 sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install -j$JOBS
 cd _install
+ln -sf bin/busybox init
 rm -f linuxrc
 mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
 touch etc/passwd
@@ -44,14 +45,35 @@ dmesg -n 1
 echo "Mounting filesystems..."
 mount -t devtmpfs none /dev
 mount -t proc none /proc
+mount -t tmpfs none /tmp -o mode=1777
 mount -t sysfs none /sys
+mkdir -p /dev/pts
+mount -t devpts none /dev/pts
+echo "Starting mdev hotplug..."
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+echo "Synchronizing clock..."
+hwclock -u -s
+echo "Activating swap..."
+swapon -a
+echo "Mounting all from /etc/fstab..."
+mount -a
+echo "Read and write premissions..."
+mount -o remount,rw /
 echo "Setting hostname..."
 hostname -F /etc/hostname
 echo "Starting services and userspace..."
-exec /sbin/init
+# put your code here
 EOF
-ln -s etc/rocketbox-init init
 cat > etc/rocketbox-shutdown << EOF
+echo "Synchronizing clock..."
+hwclock -u -w
+echo "Killing daemons..."
+killall5 -15
+sleep 5
+killall5 -9
+echo "Deactivating swap..."
+swapoff -a
 echo "Shutting down..."
 sync
 umount -a -r
@@ -86,13 +108,16 @@ esac
 DEOF
 chmod +x etc/rocketbox-*
 cat > etc/inittab << EOF
-::restart:/sbin/init
+# /etc/inittab
+::sysinit:/etc/rocketbox-init
+tty1::respawn:/sbin/getty 38400 tty1
+tty2::respawn:/sbin/getty 38400 tty2
+tty3::respawn:/sbin/getty 38400 tty3
+tty4::respawn:/sbin/getty 38400 tty4
+tty5::respawn:/sbin/getty 38400 tty5
+tty6::respawn:/sbin/getty 38400 tty6
 ::shutdown:/etc/rocketbox-shutdown
 ::ctrlaltdel:/sbin/reboot
-::once:runsvdir /etc/service
-::once:crond
-::once:cat /etc/banner.txt
-::respawn:/bin/cttyhack /bin/sh
 EOF
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
 cd ../../linux-$KERNEL_VERSION
