@@ -24,7 +24,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
-mkdir -p dev/pts proc sys etc/service etc/skel home var/spool/cron/crontabs
+mkdir -p dev/pts proc sys etc/service etc/skel home var/spool/cron/crontabs tmp
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
 echo "localhost" > etc/hostname
