@@ -24,10 +24,20 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
-mkdir -p dev proc sys etc/service home var/spool/cron/crontabs
-touch etc/passwd
+mkdir -p dev/pts proc sys etc/service etc/skel home var/spool/cron/crontabs
+echo "127.0.0.1      localhost" > etc/hosts
+echo "localnet    127.0.0.1" > etc/networks
+echo "localhost" > etc/hostname
+echo "order hosts,bind" > etc/host.conf
+echo "multi on" >> etc/host.conf
+touch etc/issue
+echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
-echo "root::0:0:Linux User,,,:/root:/bin/sh" > etc/passwd
+cat > etc/skel/.profile << EOF
+PS1="[\u@\h \w]\\$ "
+alias ll="ls -l"
+alias la="ll -a"
+EOF
 cat > etc/banner.txt << EOF
 Welcome to
      _           _              _ _             
@@ -38,13 +48,24 @@ EOF
 printf "Shoebox" > etc/hostname
 cat > etc/rocketbox-init << EOF
 #!/bin/sh
-echo "Rocketbox init v0.1alpha"
+echo "Rocketbox init v0.2alpha"
 echo "Starting up..."
 dmesg -n 1
 echo "Mounting filesystems..."
 mount -t devtmpfs none /dev
 mount -t proc none /proc
+mount -t tmpfs none /tmp -o mode=1777
 mount -t sysfs none /sys
+mount -t devpts none /dev/pts
+echo "Starting mdev hotplug..."
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+echo "Synchronizing clock..."
+hwclock -u -s
+echo "Mounting all from /etc/fstab..."
+mount -a
+echo "Read and write premissions..."
+mount -o remount,rw /
 echo "Setting hostname..."
 hostname -F /etc/hostname
 echo "Starting services and userspace..."
@@ -53,6 +74,7 @@ EOF
 ln -s etc/rocketbox-init init
 cat > etc/rocketbox-shutdown << EOF
 echo "Shutting down..."
+hwclock -u -w
 sync
 umount -a -r
 echo "Come back soon! :)"
@@ -64,7 +86,8 @@ cat > etc/rocketbox-service << DEOF
 do_help()
 {
 cat << EOF
-Usage: \$0 [start|stop|status|restart|add|remove] /path/to/service
+Usage:
+\$0 [start|stop|status|restart|add|remove] /path/to/service
 
 Options:
 start	Start a service.
