@@ -38,6 +38,7 @@ PS1="[\u@\h \w]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
 EOF
+touch etc/fstab
 cat > etc/banner.txt << EOF
 Welcome to
      _           _              _ _             
