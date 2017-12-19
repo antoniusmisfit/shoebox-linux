@@ -80,8 +80,31 @@ echo "Read and write premissions..."
 mount -o remount,rw /
 echo "Setting hostname..."
 hostname -F /etc/hostname
+echo "Setting up networking..."
+for DEVICE in /sys/class/net/* ; do
+  echo "Found network device \${DEVICE##*/}"
+  ip link set \${DEVICE##*/} up
+  [ \${DEVICE##*/} != lo ] && udhcpc -b -i \${DEVICE##*/} -s /etc/rc.dhcp
+done
 echo "Starting services and userspace..."
 exec /sbin/init
+EOF
+cat > etc/rc.dhcp << EOF
+ip addr add \$ip/\$mask dev $interface
+if [ "\$router" ]; then
+  ip route add default via \$router dev \$interface
+fi
+
+if [ "\$ip" ]; then
+  echo "DHCP configuration for device \$interface"
+  echo "ip:     \$ip"
+  echo "mask:   \$mask"
+  echo "router: \$router"
+fi
+EOF
+cat > etc/resolv.con << EOF
+nameserver 8.8.8.8
+nameserver 8.8.4.4
 EOF
 ln -s etc/rocketbox-init init
 cat > etc/rocketbox-shutdown << EOF
