@@ -6,13 +6,13 @@ BUSYBOX_VERSION=1.27.2
 SYSLINUX_VERSION=6.03
 DISTRO_NAME="Shoebox Linux"
 if [ ! -e kernel.tar.xz ];then
-wget -O kernel.tar.xz http://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
+wget -O kernel.tar.xz https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 fi
 if [ ! -e busybox.tar.bz2 ];then
-wget -O busybox.tar.bz2 http://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
+wget -O busybox.tar.bz2 https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 fi
 if [ ! -e syslinux.tar.xz ];then
-wget -O syslinux.tar.xz http://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
+wget -O syslinux.tar.xz https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 fi
 for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz;do
 tar -xvf $eachpkg
