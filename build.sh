@@ -10,21 +10,11 @@ export SYSLINUX_VERSION=6.03
 export DHCPCD_VERSION=6.11.5
 export LINKS_VERSION=2.14
 export DISTRO_NAME="Shoebox Linux"
-if [ ! -e kernel.tar.xz ];then
-wget -O kernel.tar.xz https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
-fi
-if [ ! -e busybox.tar.bz2 ];then
-wget -O busybox.tar.bz2 https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
-fi
-if [ ! -e syslinux.tar.xz ];then
-wget -O syslinux.tar.xz https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
-fi
-if [ ! -e dhcpcd.tar.xz ];then
-wget -O dhcpcd.tar.xz http://roy.marples.name/downloads/dhcpcd/dhcpcd-$DHCPCD_VERSION.tar.xz
-fi
-if [ ! -e links.tar.bz2 ];then
-wget -O links.tar.bz2 http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
-fi
+wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
+wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
+wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
+wget -O dhcpcd.tar.xz -c http://roy.marples.name/downloads/dhcpcd/dhcpcd-$DHCPCD_VERSION.tar.xz
+wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
 for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz dhcpcd.tar.xz links.tar.bz2;do
 tar -xvf $eachpkg
 done
