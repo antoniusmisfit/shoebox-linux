@@ -1,10 +1,15 @@
 #!/bin/sh
 set -ex
-JOBS=$(expr $(nproc) + 1)
-KERNEL_VERSION=4.14.5
-BUSYBOX_VERSION=1.27.2
-SYSLINUX_VERSION=6.03
-DISTRO_NAME="Shoebox Linux"
+export CFLAGS="-Os -s"
+export CXXFLAGS="$CFLAGS"
+export LDFLAGS="-static"
+export JOBS=$(expr $(nproc) + 1)
+export KERNEL_VERSION=4.14.5
+export BUSYBOX_VERSION=1.27.2
+export SYSLINUX_VERSION=6.03
+export DHCPCD_VERSION=6.11.5
+export LINKS_VERSION=2.14
+export DISTRO_NAME="Shoebox Linux"
 if [ ! -e kernel.tar.xz ];then
 wget -O kernel.tar.xz https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 fi
@@ -14,7 +19,13 @@ fi
 if [ ! -e syslinux.tar.xz ];then
 wget -O syslinux.tar.xz https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 fi
-for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz;do
+if [ ! -e dhcpcd.tar.xz ];then
+wget -O dhcpcd.tar.xz http://roy.marples.name/downloads/dhcpcd/dhcpcd-$DHCPCD_VERSION.tar.xz
+fi
+if [ ! -e links.tar.bz2 ];then
+wget -O links.tar.bz2 http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
+fi
+for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz dhcpcd.tar.xz links.tar.bz2;do
 tar -xvf $eachpkg
 done
 mkdir isoimage
@@ -118,6 +129,25 @@ cat > etc/inittab << EOF
 ::once:cat /etc/banner.txt
 ::respawn:/bin/cttyhack /bin/sh
 EOF
+cd ../../dhcpcd-$DHCPCD_VERSION
+./configure \
+	--prefix=/usr \
+	--disable-shared
+make -j$JOBS
+make DESTDIR=../busybox-$BUSYBOX_VERSION/_install install
+cd ../links-$LINKS_VERSION
+./configure \
+	--prefix=/usr \
+	--disable-shared \
+	--disable-graphics \
+	--disable-utf8 \
+	--without-ipv6 \
+	--without-ssl \
+	--without-zlib \
+	--without-x
+make -j$JOBS
+make DESTDIR=../busybox-$BUSYBOX_VERSION/_install install
+cd ../busybox-$BUSYBOX_VERSION/_install
 find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
 cd ../../linux-$KERNEL_VERSION
 make mrproper defconfig bzImage -j$JOBS
