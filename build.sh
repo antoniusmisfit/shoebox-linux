@@ -1,5 +1,6 @@
 #!/bin/sh
 set -ex
+export ROOTFS=`pwd`
 export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
@@ -39,11 +40,12 @@ alias la="ll -a"
 EOF
 touch etc/fstab
 cat > etc/banner.txt << EOF
-Welcome to
+Welcome to$(setterm -background black -foreground blue)
      _           _              _ _             
  ___| |_ ___ ___| |_ ___ _ _   | |_|___ _ _ _ _ 
 |_ -|   | . | -_| . | . |_'_|  | | |   | | |_'_|
 |___|_|_|___|___|___|___|_,_|  |_|_|_|_|___|_,_|
+$(setterm --default)
 EOF
 printf "Shoebox" > etc/hostname
 cat > etc/rocketbox-init << EOF
@@ -140,7 +142,7 @@ cat > etc/inittab << EOF
 ::once:cat /etc/banner.txt
 ::respawn:/bin/cttyhack /bin/sh
 EOF
-cd ../links-$LINKS_VERSION
+cd $ROOTFS/links-$LINKS_VERSION
 ./configure \
 	--prefix=/usr \
 	--disable-shared \
