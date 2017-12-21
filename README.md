@@ -11,7 +11,7 @@ sudo ./build.sh
 ```
 If all goes well, you should have a "shoebox_linux_live.iso" file created in the current directory, ready to be burned to CD/USB or testing as a virtual machine.
 ## Testing the build
-To test out your build of Shoebox Linux, run the qemu.sh script.
+To test out your build of Shoebox Linux, run the qemu.sh script. When the login prompt appears, enter "root" and press Enter. You will then be logged into the root account and a shell prompt will appear, ready for your commands.
 ## Cleaning up
 If you want to clean the work area before recompiling Shoebox Linux, simply run the clean.sh script in a terminal as root:
 ```

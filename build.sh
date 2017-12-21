@@ -140,7 +140,8 @@ cat > etc/inittab << EOF
 ::once:runsvdir /etc/service
 ::once:crond
 ::once:cat /etc/banner.txt
-::respawn:/bin/cttyhack /bin/sh
+#::respawn:/bin/cttyhack /bin/sh
+tty1::respawn:/sbin/getty 0 tty1
 EOF
 cd $ROOTFS/links-$LINKS_VERSION
 ./configure \
