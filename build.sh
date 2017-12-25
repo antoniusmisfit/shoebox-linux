@@ -9,7 +9,7 @@ export KERNEL_VERSION=4.14.5
 export BUSYBOX_VERSION=1.27.2
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
-export TERMINUS_VERSION=4.46
+#export TERMINUS_VERSION=4.46
 export DISTRO_NAME="Shoebox Linux"
 #Download required sources
 wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
