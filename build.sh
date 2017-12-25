@@ -58,11 +58,11 @@ echo "Rocketbox init v0.2alpha"
 echo "Starting up..."
 dmesg -n 1
 echo "Mounting filesystems..."
-mount -t devtmpfs none /dev
 mount -t proc none /proc
-mount -t tmpfs none /tmp -o mode=1777
 mount -t sysfs none /sys
+mount -t devtmpfs none /dev
 mount -t devpts none /dev/pts
+mount -t tmpfs none /tmp -o mode=1777
 echo "Starting mdev hotplug..."
 echo /sbin/mdev > /proc/sys/kernel/hotplug
 mdev -s
