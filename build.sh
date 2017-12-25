@@ -10,6 +10,7 @@ export BUSYBOX_VERSION=1.27.2
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
 export DISTRO_NAME="Shoebox Linux"
+#Download required sources
 wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
@@ -17,6 +18,7 @@ wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSIO
 for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz links.tar.bz2;do
 tar -xvf $eachpkg
 done
+#Install Busybox
 mkdir isoimage
 cd busybox-$BUSYBOX_VERSION
 make distclean defconfig
@@ -24,6 +26,7 @@ sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
 make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
+#Set up root filesystem
 mkdir -p dev/pts proc sys etc/service etc/skel home var/spool/cron/crontabs tmp
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
@@ -40,7 +43,7 @@ alias la="ll -a"
 EOF
 touch etc/fstab
 cat > etc/banner.txt << EOF
-Welcome to$(setterm -background black -foreground blue)
+Welcome to$(setterm -foreground blue)
      _           _              _ _             
  ___| |_ ___ ___| |_ ___ _ _   | |_|___ _ _ _ _ 
 |_ -|   | . | -_| . | . |_'_|  | | |   | | |_'_|
@@ -48,6 +51,7 @@ Welcome to$(setterm -background black -foreground blue)
 $(setterm --default)
 EOF
 printf "Shoebox" > etc/hostname
+#Set up Rocketbox init system and networking
 cat > etc/rocketbox-init << EOF
 #!/bin/sh
 echo "Rocketbox init v0.2alpha"
@@ -92,7 +96,7 @@ if [ "\$ip" ]; then
   echo "router: \$router"
 fi
 EOF
-cat > etc/resolv.con << EOF
+cat > etc/resolv.conf << EOF
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
