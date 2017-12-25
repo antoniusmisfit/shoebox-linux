@@ -9,13 +9,17 @@ export KERNEL_VERSION=4.14.5
 export BUSYBOX_VERSION=1.27.2
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
+export E2FSPROGS_VERSION=1.43.7
+export IPTABLES_VERSION=1.6.1
 export DISTRO_NAME="Shoebox Linux"
 #Download required sources
 wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
-for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz links.tar.bz2;do
+wget -O e2fsprogs.tar.gz http://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v$E2FSPROGS_VERSION/e2fsprogs-$E2FSPROGS_VERSION.tar.gz
+wget -O iptables.tar.bz2 -c http://www.netfilter.org/projects/iptables/files/iptables-$IPTABLES_VERSION.tar.bz2
+for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz links.tar.bz2 e2fsprogs.tar.gz iptables.tar.bz2;do
 tar -xvf $eachpkg
 done
 #Install Busybox
@@ -37,9 +41,11 @@ touch etc/issue
 echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
 cat > etc/skel/.profile << EOF
+PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 PS1="[\u@\h \w]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
+export PATH PS1
 EOF
 touch etc/fstab
 cat > etc/banner.txt << EOF
@@ -158,24 +164,47 @@ cd $ROOTFS/links-$LINKS_VERSION
 	--without-zlib \
 	--without-x
 make -j$JOBS
-make DESTDIR=../busybox-$BUSYBOX_VERSION/_install install
-cd ../busybox-$BUSYBOX_VERSION/_install
-find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
-cd ../../linux-$KERNEL_VERSION
-make mrproper defconfig bzImage -j$JOBS
-cp arch/x86/boot/bzImage ../isoimage/kernel.gz
-cd ../isoimage
-cp ../syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
-cp ../syslinux-$SYSLINUX_VERSION/bios/com32/elflink/ldlinux/ldlinux.c32 .
-echo 'default kernel.gz initrd=rootfs.gz' > ./isolinux.cfg
+make DESTDIR=$ROOTFS/busybox-$BUSYBOX_VERSION/_install install
+cd $ROOTFS/e2fsprogs-$E2FSPROGS_VERSION
+./configure \
+	--prefix=/usr \
+	--enable-elf-shlibs \
+	--disable-fsck \
+	--disable-uuidd \
+	--disable-libuuid \
+	--disable-libblkid \
+	--disable-tls \
+	--disable-nls \
+	--disable-shared
+make -j$JOBS
+make DESTDIR=$ROOTFS/busybox-$BUSYBOX_VERSION/_install install install-libs
+cd $ROOTFS/iptables-$IPTABLES_VERSION
+./configure \
+	--prefix=/usr \
+	--disable-shared
+make -j$JOBS
+make DESTDIR=$ROOTFS/busybox-$BUSYBOX_VERSION/_install install
+cd $ROOTFS/linux-$KERNEL_VERSION
+make mrproper defconfig bzImage modules -j$JOBS
+cp arch/x86/boot/bzImage $ROOTFS/isoimage/kernel.gz
+make INSTALL_MOD_PATH=$ROOTFS/busybox-$BUSYBOX_VERSION/_install modules_install
+cd $ROOTFS/busybox-$BUSYBOX_VERSION/_install
+for eachdir in bin/* sbin/* lib/* usr/bin/* usr/sbin/* use/lib/*;do
+strip -sgv $eachdir
+done
+find . | cpio -R root:root -H newc -o | gzip > $ROOTFS/isoimage/rootfs.gz
+cd $ROOTFS/isoimage
+cp $ROOTFS/syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin $ROOTFS/isolinux.bin
+cp $ROOTFS/syslinux-$SYSLINUX_VERSION/bios/com32/elflink/ldlinux/ldlinux.c32 $ROOTFS/ldlinux.c32
+echo 'default kernel.gz initrd=rootfs.gz' > $ROOTFS/isolinux.cfg
 xorriso \
   -as mkisofs \
-  -o ../shoebox_linux_live.iso \
+  -o $ROOTFS/shoebox_linux_live.iso \
   -b isolinux.bin \
   -c boot.cat \
   -no-emul-boot \
   -boot-load-size 4 \
   -boot-info-table \
-  ./
+  $ROOTFS
 cd ..
 set +ex
