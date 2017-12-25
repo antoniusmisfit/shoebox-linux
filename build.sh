@@ -9,13 +9,15 @@ export KERNEL_VERSION=4.14.5
 export BUSYBOX_VERSION=1.27.2
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
+export TERMINUS_VERSION=4.46
 export DISTRO_NAME="Shoebox Linux"
 #Download required sources
 wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
-for eachpkg in kernel.tar.xz busybox.tar.bz2 syslinux.tar.xz links.tar.bz2;do
+#wget -O terminus.tar.gz -c https://downloads.sourceforge.net/project/terminus-font/terminus-font-4.46/terminus-font-4.46.tar.gz
+for eachpkg in *.tar.*;do
 tar -xvf $eachpkg
 done
 #Install Busybox
@@ -27,7 +29,11 @@ make busybox install -j$JOBS
 cd _install
 rm -f linuxrc
 #Set up root filesystem
-mkdir -p dev/pts proc sys etc/service etc/skel home var/spool/cron/crontabs tmp
+mkdir -p dev/pts proc src sys etc/service etc/skel home var/spool/cron/crontabs tmp
+#Copy source scripts into /src folder
+cp $ROOTFS/*.sh src
+cp $ROOTFS/LICENSE src
+cp $ROOTFS/README.md src
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
 echo "localhost" > etc/hostname
