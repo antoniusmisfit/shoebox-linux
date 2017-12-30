@@ -14,6 +14,6 @@ Busybox includes several applet commands to run several types of servers. Two of
 
 There are currently two ways to add software to Shoebox Linux. The first way is to compile the software directly into the Shoebox Linux ISO image. This is how the links web browser was installed. However, the instructions required to compile certain software may vary, so please make sure to read all relevant documentation for the software to be added.
 
-The second way is to use Busybox's dpkg or rpm applets to install software packages. However, since dpkg and RPM packages are really built for Debian and Red Hat/Fedora Linux and their derivatives, they may not work as intended.
+The second way is to use Busybox's dpkg or rpm applets to install software packages. However, since dpkg and RPM packages are really built for Debian and Red Hat/Fedora Linux and their derivatives, they may not work as intended. You may have some luck using the included undeb.sh and unrpm.sh scripts, but YMMV.
 
 A third way, which is being developed, is to create a package management system for Shoebox Linux. This will be possible when a C compiler has been built into Shoebox Linux.
