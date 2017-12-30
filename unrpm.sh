@@ -3,7 +3,7 @@
 # This should work with the GNU version of cpio and gzip!
 # This should work with the bash or ash shell!
 # Requires the programs (cpio, gzip, and the pager more or less).
-#
+# Script source: https://git.busybox.net/busybox/tree/examples
 usage() {
 	cat <<EOF
 Usage: unrpm -l package.rpm            <List contents of rpm package>
