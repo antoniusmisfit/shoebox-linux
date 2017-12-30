@@ -179,7 +179,7 @@ find . | cpio -R root:root -H newc -o | gzip > $ISO/rootfs.gz
 cd $SRC
 cd linux-$KERNEL_VERSION
 make mrproper defconfig bzImage -j$JOBS
-cp arch/x86/boot/bzImage $ISO/isoimage/kernel.gz
+cp arch/x86/boot/bzImage $ISO/kernel.gz
 cd $ISO
 cp $SRC/syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
 cp $SRC/syslinux-$SYSLINUX_VERSION/bios/com32/elflink/ldlinux/ldlinux.c32 .
