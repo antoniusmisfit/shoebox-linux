@@ -1,6 +1,13 @@
 #!/bin/sh
 set -ex
-export ROOTFS=`pwd`
+# Setup env
+export WORK="$(pwd)"
+export ROOTFS="$WORK/rootfs"
+export SRC="$WORK/sources"
+export ISO="$WORK/iso"
+# Make the folders and remove old
+rm -rf $ROOTFS $SRC $ISO
+mkdir -p $SRC $ROOTFS $ISO
 export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
@@ -12,6 +19,7 @@ export LINKS_VERSION=2.14
 #export TERMINUS_VERSION=4.46
 export DISTRO_NAME="Shoebox Linux"
 #Download required sources
+cd $SRC
 wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
@@ -21,19 +29,21 @@ for eachpkg in *.tar.*;do
 tar -xvf $eachpkg
 done
 #Install Busybox
-mkdir isoimage
+cd $SRC
 cd busybox-$BUSYBOX_VERSION
 make distclean defconfig
 sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
-make busybox install -j$JOBS
-cd _install
+make busybox -j$JOBS
+make CONFIG_PREFIX=$ROOTFS install
+cd $ROOTFS
 rm -f linuxrc
+ln -sf bin/busybox init
 #Set up root filesystem
 mkdir -p dev/pts proc src sys etc/service etc/skel home var/spool/cron/crontabs tmp
 #Copy source scripts into /src folder
-cp $ROOTFS/*.sh src
-cp $ROOTFS/LICENSE src
-cp $ROOTFS/README.md src
+cp $WORK/*.sh src
+cp $WORK/LICENSE src
+cp $WORK/README.md src
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
 echo "localhost" > etc/hostname
@@ -152,7 +162,8 @@ cat > etc/inittab << EOF
 ::once:cat /etc/banner.txt
 tty1::respawn:/sbin/getty 0 tty1
 EOF
-cd $ROOTFS/links-$LINKS_VERSION
+cd $SRC
+cd links-$LINKS_VERSION
 ./configure \
 	--prefix=/usr \
 	--disable-shared \
@@ -163,24 +174,25 @@ cd $ROOTFS/links-$LINKS_VERSION
 	--without-zlib \
 	--without-x
 make -j$JOBS
-make DESTDIR=../busybox-$BUSYBOX_VERSION/_install install
-cd ../busybox-$BUSYBOX_VERSION/_install
-find . | cpio -R root:root -H newc -o | gzip > ../../isoimage/rootfs.gz
-cd ../../linux-$KERNEL_VERSION
+make DESTDIR=$ROOTFS install
+cd $ROOTFS
+find . | cpio -R root:root -H newc -o | gzip > $ISO/rootfs.gz
+cd $SRC
+cd linux-$KERNEL_VERSION
 make mrproper defconfig bzImage -j$JOBS
-cp arch/x86/boot/bzImage ../isoimage/kernel.gz
-cd ../isoimage
-cp ../syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
-cp ../syslinux-$SYSLINUX_VERSION/bios/com32/elflink/ldlinux/ldlinux.c32 .
+cp arch/x86/boot/bzImage $ISO/isoimage/kernel.gz
+cd $ISO
+cp $SRC/syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
+cp $SRC/syslinux-$SYSLINUX_VERSION/bios/com32/elflink/ldlinux/ldlinux.c32 .
 echo 'default kernel.gz initrd=rootfs.gz' > ./isolinux.cfg
 xorriso \
   -as mkisofs \
-  -o ../shoebox_linux_live.iso \
+  -o $WORK/shoebox_linux_live.iso \
   -b isolinux.bin \
   -c boot.cat \
   -no-emul-boot \
   -boot-load-size 4 \
   -boot-info-table \
-  ./
+  $ISO
 cd ..
 set +ex
