@@ -37,7 +37,6 @@ make busybox -j$JOBS
 make CONFIG_PREFIX=$ROOTFS install
 cd $ROOTFS
 rm -f linuxrc
-ln -sf bin/busybox init
 #Set up root filesystem
 mkdir -p dev/pts proc src sys etc/service etc/skel home var/spool/cron/crontabs tmp
 #Copy source scripts into /src folder
