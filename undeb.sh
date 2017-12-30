@@ -3,7 +3,7 @@
 # This should work with the GNU version of tar and gzip!
 # This should work with the bash or ash shell!
 # Requires the programs (ar, tar, gzip, and the pager more or less).
-#
+# Script source: https://git.busybox.net/busybox/tree/examples
 usage() {
 	cat <<EOF
 Usage: undeb -c package.deb            <Print control file info>
