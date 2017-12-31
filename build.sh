@@ -37,7 +37,7 @@ make CONFIG_PREFIX=$ROOTFS install
 cd $ROOTFS
 rm -f linuxrc
 #Set up root filesystem
-mkdir -p dev/pts proc src sys etc/service etc/skel home var/spool/cron/crontabs tmp
+mkdir -p dev/pts proc src sys root etc/service etc/skel home var/spool/cron/crontabs tmp
 #Copy source scripts into /src folder
 cp $WORK/*.sh src
 cp $WORK/LICENSE src
@@ -55,6 +55,7 @@ PS1="[\u@\h \w]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
 EOF
+cp etc/skel/.profile root/.profile
 touch etc/fstab
 cat > etc/banner.txt << EOF
 Welcome to$(setterm -foreground blue)
