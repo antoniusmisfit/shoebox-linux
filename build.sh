@@ -84,7 +84,7 @@ echo "Synchronizing clock..."
 hwclock -u -s
 echo "Mounting all from /etc/fstab..."
 mount -a
-echo "Read and write premissions..."
+echo "Read and write permissions..."
 mount -o remount,rw /
 echo "Setting hostname..."
 hostname -F /etc/hostname
