@@ -5,8 +5,7 @@ export WORK="$(pwd)"
 export ROOTFS="$WORK/rootfs"
 export SRC="$WORK/sources"
 export ISO="$WORK/iso"
-# Make the folders and remove old
-rm -rf $ROOTFS $SRC $ISO
+# Make the folders
 mkdir -p $SRC $ROOTFS $ISO
 export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
