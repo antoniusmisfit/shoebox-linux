@@ -41,7 +41,7 @@ mkdir -p dev/pts proc src sys etc/service etc/skel home var/spool/cron/crontabs 
 #Copy source scripts into /src folder
 cp $WORK/*.sh src
 cp $WORK/LICENSE src
-cp $WORK/README.md src
+cp $WORK/*.md src
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
 echo "localhost" > etc/hostname
