@@ -44,7 +44,7 @@ cp $WORK/LICENSE src
 cp $WORK/*.md src
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
-echo "localhost" > etc/hostname
+printf "Shoebox" > etc/hostname
 echo "order hosts,bind" > etc/host.conf
 echo "multi on" >> etc/host.conf
 touch etc/issue
@@ -64,7 +64,6 @@ Welcome to$(setterm -foreground blue)
 |___|_|_|___|___|___|___|_,_|  |_|_|_|_|___|_,_|
 $(setterm --default)
 EOF
-printf "Shoebox" > etc/hostname
 #Set up Rocketbox init system and networking
 cat > etc/rocketbox-init << EOF
 #!/bin/sh
