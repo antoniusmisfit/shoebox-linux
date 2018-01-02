@@ -157,6 +157,7 @@ cat > etc/inittab << EOF
 ::ctrlaltdel:/sbin/reboot
 ::once:runsvdir /etc/service
 ::once:crond
+::once:clear
 ::once:cat /etc/banner.txt
 tty1::respawn:/sbin/getty 0 tty1
 EOF
