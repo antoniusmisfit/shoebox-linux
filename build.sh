@@ -11,10 +11,11 @@ export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
-export KERNEL_VERSION=4.14.5
+export KERNEL_VERSION=4.14.12
 export BUSYBOX_VERSION=1.28.0
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
+export WPA_VERSION=2.6
 #export TERMINUS_VERSION=4.46
 export DISTRO_NAME="Shoebox Linux"
 #Download required sources
@@ -23,6 +24,7 @@ wget -O kernel.tar.xz -c https://kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
+wget -O wpa.tar.gz -c http://hostap.epitest.fi/releases/wpa_supplicant-$WPA_VERSION.tar.gz
 #wget -O terminus.tar.gz -c https://downloads.sourceforge.net/project/terminus-font/terminus-font-4.46/terminus-font-4.46.tar.gz
 for eachpkg in *.tar.*;do
 tar -xvf $eachpkg
@@ -50,12 +52,11 @@ echo "multi on" >> etc/host.conf
 touch etc/issue
 echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
-cat > etc/skel/.profile << EOF
+cat > etc/profile << EOF
 PS1="[\u@\h \w]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
 EOF
-cp etc/skel/.profile root/.profile
 touch etc/fstab
 cat > etc/banner.txt << EOF
 Welcome to$(setterm -foreground blue)
@@ -92,6 +93,7 @@ echo "Setting up networking..."
 for DEVICE in /sys/class/net/* ; do
   echo "Found network device \${DEVICE##*/}"
   ip link set \${DEVICE##*/} up
+  [ ${DEVICE##*/} = wlan0 ] && wpa_supplicant -B -iwlan0 -c/etc/wpa_supplicant.conf
   [ \${DEVICE##*/} != lo ] && udhcpc -b -i \${DEVICE##*/} -s /etc/rc.dhcp
 done
 echo "Starting services and userspace..."
@@ -174,6 +176,12 @@ cd links-$LINKS_VERSION
 	--without-x
 make -j$JOBS
 make DESTDIR=$ROOTFS install
+cd $SRC
+cd wpa_supplicant-$WPA_VERSION
+cd wpa_supplicant
+cp defconfig .config
+make -j$JOBS
+make BINDIR=/sbin DESTDIR=$ROOTFS install
 cd $ROOTFS
 find . | cpio -R root:root -H newc -o | gzip > $ISO/rootfs.gz
 cd $SRC
