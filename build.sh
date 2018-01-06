@@ -93,6 +93,7 @@ echo "Setting up networking..."
 for DEVICE in /sys/class/net/* ; do
   echo "Found network device \${DEVICE##*/}"
   ip link set \${DEVICE##*/} up
+  [ ${DEVICE##*/} = wlan0 ] && wpa_supplicant -B -iwlan0 -c/etc/wpa_supplicant.conf
   [ \${DEVICE##*/} != lo ] && udhcpc -b -i \${DEVICE##*/} -s /etc/rc.dhcp
 done
 echo "Starting services and userspace..."
