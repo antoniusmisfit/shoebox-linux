@@ -1,22 +1,25 @@
 #!/bin/sh
 set -ex
 # Setup env
-export WORK="$(pwd)"
+export WORK=`realpath --no-symlinks $PWD`
 export ROOTFS="$WORK/rootfs"
 export SRC="$WORK/sources"
 export ISO="$WORK/iso"
 # Make the folders
 mkdir -p $SRC $ROOTFS $ISO
+# Compilation flags
 export CFLAGS="-Os -s"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
+# Version numbers for critical software
 export KERNEL_VERSION=4.15.2
 export BUSYBOX_VERSION=1.28.0
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
-#export TERMINUS_VERSION=4.46
-export DISTRO_NAME="Shoebox Linux"
+# Name of distribution
+export DISTRO_UNAME="Shoebox"
+export DISTRO_NAME="$DISTRO_UNAME Linux"
 #Download required sources
 cd $SRC
 wget -O kernel.tar.xz -c https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
@@ -44,9 +47,11 @@ cp $WORK/LICENSE src
 cp $WORK/*.md src
 echo "127.0.0.1      localhost" > etc/hosts
 echo "localnet    127.0.0.1" > etc/networks
-printf "Shoebox" > etc/hostname
-echo "order hosts,bind" > etc/host.conf
-echo "multi on" >> etc/host.conf
+printf "$DISTRO_UNAME" > etc/hostname
+cat > etc/host.conf << EOF
+order hosts,bind
+multi on
+EOF
 touch etc/issue
 echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
@@ -58,6 +63,7 @@ EOF
 cp etc/skel/.profile root/.profile
 touch etc/fstab
 cat > etc/banner.txt << EOF
+$(clear)
 Welcome to$(setterm -foreground blue)
      _           _              _ _             
  ___| |_ ___ ___| |_ ___ _ _   | |_|___ _ _ _ _ 
@@ -157,7 +163,6 @@ cat > etc/inittab << EOF
 ::ctrlaltdel:/sbin/reboot
 ::once:runsvdir /etc/service
 ::once:crond
-::once:clear
 ::once:cat /etc/banner.txt
 tty1::respawn:/sbin/getty 0 tty1
 EOF
