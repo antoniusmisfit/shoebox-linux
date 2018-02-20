@@ -55,12 +55,11 @@ EOF
 touch etc/issue
 echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
-cat > etc/skel/.profile << EOF
+cat > etc/profile << EOF
 PS1="[\u@\h \w]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
 EOF
-cp etc/skel/.profile root/.profile
 touch etc/fstab
 cat > etc/banner.txt << EOF
 $(clear)
