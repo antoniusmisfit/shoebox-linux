@@ -56,7 +56,7 @@ touch etc/issue
 echo "root::0:0:root:/root:/bin/sh" > etc/passwd
 echo "root:x:0:" > etc/group
 cat > etc/profile << EOF
-PS1="[\u@\h \w]\\$ "
+export PS1="\[\e[32m\][\[\e[m\]\[\e[37m\]\u\[\e[m\]\[\e[32m\]@\[\e[m\]\[\e[37m\]\h\[\e[m\] \[\e[35m\]\w\[\e[m\]\[\e[32m\]]\[\e[m\]\\$ "
 alias ll="ls -l"
 alias la="ll -a"
 EOF

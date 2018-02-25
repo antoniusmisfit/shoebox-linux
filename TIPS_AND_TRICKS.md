@@ -1,9 +1,9 @@
 # Shoebox Linux Tips And Tricks
 
 ## Customizing your shell environment
-By default, the shell environment is extremely basic. However, you may customize your environment by editing a special file in your home directory called ".profile". To get you started, you can copy over the sample .profile provided in the /etc/skel directory:
+By default, the shell environment is extremely basic. However, you may customize your environment by editing a special file in your home directory called ".profile". To get you started, you can copy over the global /etc/profile:
 ```
-cp /etc/skel/.profile ~/.profile
+cp /etc/profile ~/.profile
 ```
 In it, you will find commands that set the primary command prompt and a few command aliases for convenience. You can then add commands for stuff like setting the console font, displaying the message of the day, and so on.
 
