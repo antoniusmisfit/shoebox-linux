@@ -71,37 +71,7 @@ Welcome to$(setterm -foreground blue)
 $(setterm --default)
 EOF
 #Set up Rocketbox init system and networking
-cat > etc/rocketbox-init << EOF
-#!/bin/sh
-echo "Rocketbox init v0.2alpha"
-echo "Starting up..."
-dmesg -n 1
-echo "Mounting filesystems..."
-mount -t proc none /proc
-mount -t sysfs none /sys
-mount -t devtmpfs none /dev
-mount -t devpts none /dev/pts
-mount -t tmpfs none /tmp -o mode=1777
-echo "Starting mdev hotplug..."
-echo /sbin/mdev > /proc/sys/kernel/hotplug
-mdev -s
-echo "Synchronizing clock..."
-hwclock -u -s
-echo "Mounting all from /etc/fstab..."
-mount -a
-echo "Read and write permissions..."
-mount -o remount,rw /
-echo "Setting hostname..."
-hostname -F /etc/hostname
-echo "Setting up networking..."
-for DEVICE in /sys/class/net/* ; do
-  echo "Found network device \${DEVICE##*/}"
-  ip link set \${DEVICE##*/} up
-  [ \${DEVICE##*/} != lo ] && udhcpc -b -i \${DEVICE##*/} -s /etc/rc.dhcp
-done
-echo "Starting services and userspace..."
-exec /sbin/init
-EOF
+wget -O etc/rocketbox-init https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-init
 cat > etc/rc.dhcp << EOF
 ip addr add \$ip/\$mask dev $interface
 if [ "\$router" ]; then
@@ -120,41 +90,8 @@ nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
 ln -s etc/rocketbox-init init
-cat > etc/rocketbox-shutdown << EOF
-echo "Shutting down..."
-hwclock -u -w
-sync
-umount -a -r
-echo "Come back soon! :)"
-sleep 1
-EOF
-cat > etc/rocketbox-service << DEOF
-#!/bin/sh
-
-do_help()
-{
-cat << EOF
-Usage:
-\$0 [start|stop|status|restart|add|remove] /path/to/service
-
-Options:
-start	Start a service.
-stop	Stop a running service.
-restart	Stop, then start a previously running service.
-status	Report the status of the given service.
-add	Adds a service directory to /etc/service via soft linking.
-remove	Removes a service from /etc/service by removing the soft link.
-EOF
-}
-case \$1 in
-	start|restart) sv up /etc/service/\$(basename \$2);;
-	stop) sv down /etc/service/\$(basename \$2);;
-	status) sv \$1 /etc/service/\$(basename \$2);;
-	add) ln -s \$2 /etc/service/\$(basename \$2);;
-	remove) rm -rf /etc/service/\$(basename \$2);;
-	*) do_help;exit;;
-esac
-DEOF
+wget -O etc/rocketbox-shutdown https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-shutdown
+wget -O etc/rocketbox-service https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-service
 chmod +x etc/rocketbox-*
 cat > etc/inittab << EOF
 ::restart:/sbin/init
