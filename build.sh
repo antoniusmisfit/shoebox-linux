@@ -90,8 +90,9 @@ nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
 ln -s etc/rocketbox-init init
-wget -O etc/rocketbox-shutdown https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-shutdown
-wget -O etc/rocketbox-service https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-service
+for eachcomp in shutdown service;do
+wget -O etc/rocketbox-$eachcomp https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-$eachcomp
+done
 chmod +x etc/rocketbox-*
 cat > etc/inittab << EOF
 ::restart:/sbin/init
