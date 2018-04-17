@@ -13,8 +13,8 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
 # Version numbers for critical software
-export KERNEL_VERSION=4.15.2
-export BUSYBOX_VERSION=1.28.0
+export KERNEL_VERSION=4.16.2
+export BUSYBOX_VERSION=1.28.3
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
 # Name of distribution
