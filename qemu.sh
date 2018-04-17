@@ -7,8 +7,10 @@
 # If this script is run without a running graphical server, it will run QEMU
 # using a curses interface.
 
+ISO="shoebox_linux_live.iso"
+
 if [ "$TERM" = "linux" ];then
-cmd="qemu-system-$(uname -m) -curses -m 1G -cdrom shoebox_linux_live.iso -boot d"
+cmd="qemu-system-$(uname -m) -curses -m 1G -cdrom $ISO -boot d"
 
 if [ "$1" = "-hdd" -o "$1" = "-h" ] ; then
   echo "Starting QEMU curses with attached ISO image and hard disk."
@@ -18,7 +20,7 @@ else
   $cmd
 fi
 else
-cmd="qemu-system-$(uname -m) -m 1G -cdrom shoebox_linux_live.iso -boot d -vga std"
+cmd="qemu-system-$(uname -m) -m 1G -cdrom $ISO -boot d -vga std"
 
 if [ "$1" = "-hdd" -o "$1" = "-h" ] ; then
   echo "Starting QEMU with attached ISO image and hard disk."

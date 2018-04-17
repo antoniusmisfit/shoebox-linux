@@ -40,7 +40,7 @@ make CONFIG_PREFIX=$ROOTFS install
 cd $ROOTFS
 rm -f linuxrc
 #Set up root filesystem
-mkdir -p dev/pts proc src sys root etc/service etc/skel home var/spool/cron/crontabs tmp
+mkdir -p dev/pts proc src sys root mnt etc/service etc/skel home var/spool/cron/crontabs tmp
 #Copy source scripts into /src folder
 cp $WORK/*.sh src
 cp $WORK/LICENSE src
@@ -94,6 +94,8 @@ for eachcomp in shutdown service;do
 wget -O etc/rocketbox-$eachcomp https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-$eachcomp
 done
 chmod +x etc/rocketbox-*
+wget -O usr/bin/omicron-bb https://raw.githubusercontent.com/antoniusmisfit/omicron/master/omicron-bb
+chmod +x usr/bin/omicron-*
 cat > etc/inittab << EOF
 ::restart:/sbin/init
 ::shutdown:/etc/rocketbox-shutdown
