@@ -94,8 +94,8 @@ for eachcomp in shutdown service;do
 wget -O etc/rocketbox-$eachcomp https://raw.githubusercontent.com/antoniusmisfit/rocketbox-init/master/rocketbox-$eachcomp
 done
 chmod +x etc/rocketbox-*
-wget -O usr/bin/omicron-bb https://raw.githubusercontent.com/antoniusmisfit/omicron/master/omicron-bb
-chmod +x usr/bin/omicron-*
+wget -O usr/bin/shoeblog https://raw.githubusercontent.com/antoniusmisfit/shoeblog/master/shoeblog
+chmod +x usr/bin/shoeblog
 cat > etc/inittab << EOF
 ::restart:/sbin/init
 ::shutdown:/etc/rocketbox-shutdown
