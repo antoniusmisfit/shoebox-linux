@@ -19,6 +19,6 @@ If you want to clean the work area before recompiling Shoebox Linux, simply run 
 sudo ./clean.sh -a
 ```
 # TODO
-* Add a package manager.
+* Add a [package manager](https://github.com/antoniusmisfit/box-package-manager).
 * Get basic networking working right.(requires GLIBC or musl)
 * Add a C compiler to the system. (Either tcc or gcc)
