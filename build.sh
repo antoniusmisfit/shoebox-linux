@@ -1,5 +1,13 @@
 #!/bin/sh
 set -ex
+# Useful function from MLL
+yconfig() {
+	while [ $# -ne 0 ]; do
+		sed -i "s/.*CONFIG_$1\ .*/CONFIG_$1=y/" .config
+		grep ^"CONFIG_$1=y" .config || echo "CONFIG_$1=y" >> .config
+		shift 1
+	done
+}
 # Setup env
 export WORK=`realpath --no-symlinks $PWD`
 export ROOTFS="$WORK/rootfs"
@@ -17,6 +25,7 @@ export KERNEL_VERSION=4.17.3
 export BUSYBOX_VERSION=1.28.4
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
+export XZ_VERSION=5.2.4
 # Name of distribution
 export DISTRO_UNAME="Shoebox"
 export DISTRO_NAME="$DISTRO_UNAME Linux"
@@ -26,6 +35,7 @@ wget -O kernel.tar.xz -c https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$KER
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
+wget -O xz.tar.xz -c https://tukaani.org/xz/xz-$XZ_VERSION.tar.xz
 #wget -O terminus.tar.gz -c https://downloads.sourceforge.net/project/terminus-font/terminus-font-4.46/terminus-font-4.46.tar.gz
 for eachpkg in *.tar.*;do
 tar -xvf $eachpkg
@@ -118,11 +128,30 @@ cd links-$LINKS_VERSION
 	--without-x
 make -j$JOBS
 make DESTDIR=$ROOTFS install
+cd $SRC
+cd xz-$XZ_VERSION
+./configure \
+	--prefix=/usr \
+	--disable-nls \
+	--disable-shared \
+	--enable-static
+make -j$JOBS
+make DESTDIR=$ROOTFS install
 cd $ROOTFS
 find . | cpio -R root:root -H newc -o | gzip > $ISO/rootfs.gz
 cd $SRC
 cd linux-$KERNEL_VERSION
-make mrproper defconfig bzImage -j$JOBS
+unset LDFLAGS
+make mrproper defconfig -j$JOBS
+yconfig CC_OPTIMIZE_FOR_SIZE OPTIMIZE_INLINING BLK_DEV_SD \
+	EXT2_FS EXT3_FS EXT4_FS MSDOS_FS VFAT_FS PROC_FS TMPFS DEVTMPFS DEVTMPFS_MOUNT \
+	PPP PPP_ASYNC PPP_SYNC_TTY SMP \
+	HID_GENERIC USB_HID USB_SUPPORT USB_XHCI_HCD USB_EHCI_HCD USB_OHCI_HCD \
+	PARTITION_ADVANCED EFI_PARTITION \
+	EFI EFI_STUB EFI_MIXED EFI_VARS \
+	NET PACKET UNIX INET IPV6 NETDEVICES ETHERNET
+yes '' | make silentoldconfig -j$JOBS
+make bzImage -j$JOBS
 cp arch/x86/boot/bzImage $ISO/kernel.gz
 cd $ISO
 cp $SRC/syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
