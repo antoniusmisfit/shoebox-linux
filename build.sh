@@ -25,7 +25,6 @@ export KERNEL_VERSION=4.17.3
 export BUSYBOX_VERSION=1.28.4
 export SYSLINUX_VERSION=6.03
 export LINKS_VERSION=2.14
-export XZ_VERSION=5.2.4
 # Name of distribution
 export DISTRO_UNAME="Shoebox"
 export DISTRO_NAME="$DISTRO_UNAME Linux"
@@ -35,7 +34,6 @@ wget -O kernel.tar.xz -c https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$KER
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
-wget -O xz.tar.xz -c https://tukaani.org/xz/xz-$XZ_VERSION.tar.xz
 #wget -O terminus.tar.gz -c https://downloads.sourceforge.net/project/terminus-font/terminus-font-4.46/terminus-font-4.46.tar.gz
 for eachpkg in *.tar.*;do
 tar -xvf $eachpkg
@@ -126,15 +124,6 @@ cd links-$LINKS_VERSION
 	--without-ssl \
 	--without-zlib \
 	--without-x
-make -j$JOBS
-make DESTDIR=$ROOTFS install
-cd $SRC
-cd xz-$XZ_VERSION
-./configure \
-	--prefix=/usr \
-	--disable-nls \
-	--disable-shared \
-	--enable-static
 make -j$JOBS
 make DESTDIR=$ROOTFS install
 cd $ROOTFS
