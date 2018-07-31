@@ -1,5 +1,13 @@
 #!/bin/sh
 set -ex
+# Useful function from MLL
+yconfig() {
+	while [ $# -ne 0 ]; do
+		sed -i "s/.*CONFIG_$1\ .*/CONFIG_$1=y/" .config
+		grep ^"CONFIG_$1=y" .config || echo "CONFIG_$1=y" >> .config
+		shift 1
+	done
+}
 # Setup env
 export WORK=`realpath --no-symlinks $PWD`
 export ROOTFS="$WORK/rootfs"
@@ -122,7 +130,17 @@ cd $ROOTFS
 find . | cpio -R root:root -H newc -o | gzip > $ISO/rootfs.gz
 cd $SRC
 cd linux-$KERNEL_VERSION
-make mrproper defconfig bzImage -j$JOBS
+unset LDFLAGS
+make mrproper defconfig -j$JOBS
+yconfig CC_OPTIMIZE_FOR_SIZE OPTIMIZE_INLINING BLK_DEV_SD \
+	EXT2_FS EXT3_FS EXT4_FS MSDOS_FS VFAT_FS PROC_FS TMPFS DEVTMPFS DEVTMPFS_MOUNT \
+	PPP PPP_ASYNC PPP_SYNC_TTY SMP \
+	HID_GENERIC USB_HID USB_SUPPORT USB_XHCI_HCD USB_EHCI_HCD USB_OHCI_HCD \
+	PARTITION_ADVANCED EFI_PARTITION \
+	EFI EFI_STUB EFI_MIXED EFI_VARS \
+	NET PACKET UNIX INET IPV6 NETDEVICES ETHERNET
+yes '' | make silentoldconfig -j$JOBS
+make bzImage -j$JOBS
 cp arch/x86/boot/bzImage $ISO/kernel.gz
 cd $ISO
 cp $SRC/syslinux-$SYSLINUX_VERSION/bios/core/isolinux.bin .
