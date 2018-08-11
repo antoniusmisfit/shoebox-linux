@@ -21,10 +21,10 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
 # Version numbers for critical software
-export KERNEL_VERSION=4.17.3
-export BUSYBOX_VERSION=1.28.4
+export KERNEL_VERSION=4.17.14
+export BUSYBOX_VERSION=1.29.2
 export SYSLINUX_VERSION=6.03
-export LINKS_VERSION=2.14
+export LINKS_VERSION=2.16
 # Name of distribution
 export DISTRO_UNAME="Shoebox"
 export DISTRO_NAME="$DISTRO_UNAME Linux"
