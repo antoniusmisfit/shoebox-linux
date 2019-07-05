@@ -21,16 +21,16 @@ export CXXFLAGS="$CFLAGS"
 export LDFLAGS="-static"
 export JOBS=$(expr $(nproc) + 1)
 # Version numbers for critical software
-export KERNEL_VERSION=4.19.8
-export BUSYBOX_VERSION=1.29.3
+export KERNEL_VERSION=5.1.16
+export BUSYBOX_VERSION=1.31.0
 export SYSLINUX_VERSION=6.03
-export LINKS_VERSION=2.16
+export LINKS_VERSION=2.19
 # Name of distribution
 export DISTRO_UNAME="Shoebox"
 export DISTRO_NAME="$DISTRO_UNAME Linux"
 #Download required sources
 cd $SRC
-wget -O kernel.tar.xz -c https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$KERNEL_VERSION.tar.xz
+wget -O kernel.tar.xz -c https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-$KERNEL_VERSION.tar.xz
 wget -O busybox.tar.bz2 -c https://busybox.net/downloads/busybox-$BUSYBOX_VERSION.tar.bz2
 wget -O syslinux.tar.xz -c https://kernel.org/pub/linux/utils/boot/syslinux/syslinux-$SYSLINUX_VERSION.tar.xz
 wget -O links.tar.bz2 -c http://links.twibright.com/download/links-$LINKS_VERSION.tar.bz2
